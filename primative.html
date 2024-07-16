@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<!-- Load d3.js -->
+<script src="https://d3js.org/d3.v4.js"></script>
+
+<!-- Create a div where the graph will take place -->
+<div id="my_dataviz"></div>
+
+<script>
+    // Some constants controlling the graph appearance
+    const PADDING_BUBBLE = 15 // distance between edge end and bubble
+    const PADDING_LABEL = 30 // distance between edge end and engineer name
+    const BUBBLE_SIZE_MIN = 4
+    const BUBBLE_SIZE_MAX = 20
+    
+    var diameter = 560,
+        radius = diameter / 2,
+        innerRadius = radius - 170; // between center and edge end
+    
+    // The 'cluster' function takes 1 argument as input. It also has methods (??) like cluster.separation(), cluster.size() and cluster.nodeSize()
+    var cluster = d3.cluster()
+        .size([360, innerRadius]);
+    
+    var line = d3.radialLine()
+        .curve(d3.curveBundle.beta(0.85))
+        .radius(function (d) { return d.y; })
+        .angle(function (d) { return d.x / 180 * Math.PI; });
+    
+    var svg = d3.select("#my_dataviz").append("svg")
+        .attr("width", diameter)
+        .attr("height", diameter)
+        .append("g")
+        .attr("transform", "translate(" + radius + "," + radius + ")");
+    
+    var link = svg.append("g").selectAll(".link"),
+        label = svg.append("g").selectAll(".label"),
+        bubble = svg.append("g").selectAll(".bubble");
+    
+    // Add a scale for bubble size
+    var bubbleSizeScale = d3.scaleLinear()
+        .domain([0, 100])
+        .range([BUBBLE_SIZE_MIN, BUBBLE_SIZE_MAX]);
+    
+    // Scale for the bubble size
+    d3.json("data.json", function (error, hierarchicalData) {
+    
+        // If wanna see your data
+        // console.log(hierarchicalData)
+    
+        // Reformat the data
+        var root = packageHierarchy(hierarchicalData)
+            //debugger;
+            .sum(function (d) { console.log(d); return d.size; });
+        // console.log(root)
+    
+        // Build an object that gives feature of each leaves
+        cluster(root);
+        leaves = root.leaves()
+
+        // // Define the gradient
+        // var gradient = svg.append("defs")
+        //     .append("linearGradient")
+        //     .attr("id", "line-gradient")
+        //     .attr("gradientUnits", "userSpaceOnUse")
+        //     .attr("x1", "0%")
+        //     .attr("y1", "0%")
+        //     .attr("x2", "100%")
+        //     .attr("y2", "100%");
+            
+        
+        // gradient.append("stop")
+        //     .attr("offset", "0%")
+        //     .attr("stop-color", "purple");
+        
+        // gradient.append("stop")
+        //     .attr("offset", "1%")
+        //     .attr("stop-color", "white");
+
+        // gradient.append("stop")
+        //     .attr("offset", "5%")
+        //     .attr("stop-color", "grey");
+        
+    
+        // Leaves is an array of Objects. 1 item = one leaf. Provides x and y for leaf position in the svg. Also gives details about its parent.
+        link = link
+            .data(packageImports(leaves))
+            .enter().append("path")
+            .each(function (d, i) { 
+                d.source = d[0], 
+                d.target = d[d.length - 1]; 
+            
+            // Create a unique gradient for each link
+                var gradientId = "line-gradient-" + i;
+                var gradient = svg.append("defs")
+                    .append("linearGradient")
+                    .attr("id", gradientId)
+                    .attr("gradientUnits", "userSpaceOnUse")
+                    .attr("x1", d.source.x)
+                    .attr("y1", d.source.y)
+                    .attr("x2", d.target.x)
+                    .attr("y2", d.target.y);
+                
+                gradient.append("stop")
+                    .attr("offset", "0%")
+                    .attr("stop-color", "purple");
+                
+                gradient.append("stop")
+                    .attr("offset", "50%")
+                    .attr("stop-color", "white");
+
+                gradient.append("stop")
+                    .attr("offset", "100%")
+                    .attr("stop-color", "grey");
+
+                // Set the gradient coordinates based on the path
+                // var path = d3.select(this);
+                // var pathLength = path.node().getTotalLength();
+                // var startPoint = path.node().getPointAtLength(0);
+                // var endPoint = path.node().getPointAtLength(pathLength);
+                        
+                // gradient.attr("x1", startPoint.x)
+                //     .attr("y1", startPoint.y)
+                //     .attr("x2", endPoint.x)
+                //     .attr("y2", endPoint.y);
+                
+                // Apply the gradient to this specific path
+                d.gradientId = gradientID; 
+            })
+            .attr("class", "link")
+            .attr("d", line)
+            .attr("fill", "none")
+            //.attr("stroke", "black")
+            .attr("stroke", function(d) { return "url(#" + d.gradientId + ")"; })
+            .style('stroke-width', '4px');
+
+    
+        label = label
+            .data(leaves)
+            .enter().append("text")
+            .attr("class", "label")
+            .attr("dy", "0.31em")
+            .attr("transform", function (d) { return "rotate(" + (d.x - 90) + ")translate(" + (d.y + PADDING_LABEL) + ",0)" + (d.x < 180 ? "" : "rotate(180)"); })
+            .attr("text-anchor", function (d) { return d.x < 180 ? "start" : "end"; })
+            .text(function (d) { return d.data.key; });
+        
+        // Define a color scale for classes
+        var colorScale = d3.scaleOrdinal()
+            .domain(["opioid", "sedative","stimulant", "psychedelic", "cannabinoid", "steroid", "other", "notcat"]) // Specify your class names here
+            .range(["#AB72E4", "#E29EF5", "#EA6C7F", "#E28E18","#6CAB6C", "#ee2824", "#7D7D7D", "#85BBC0" ]); // Specify colors for each class
+    
+    
+        bubble = bubble
+            .data(leaves)
+            .enter().append("circle")
+            .attr("class", "bubble")
+            .attr("transform", function (d) { return "rotate(" + (d.x - 90) + ")translate(" + (d.y + PADDING_BUBBLE) + ",0)" })
+            .attr('r', d => bubbleSizeScale(d.value))
+            .attr('stroke', 'black')
+            .attr('fill', function(d) {
+                var className = d.data.name.split(".")[1]; // Extract the class name from the node's name
+                console.log(d.x, d.y);
+                return colorScale(className); // Use the color scale to assign color based on the class name
+
+            })
+            .style('opacity', .9); 
+    
+    }); 
+    
+    
+    // Lazily construct the package hierarchy from class names.
+    function packageHierarchy(classes) {
+        var map = {};
+    
+        function find(name, data) {
+            var node = map[name], i;
+            if (!node) {
+                node = map[name] = data || { name: name, children: [] };
+                if (name.length) {
+                    node.parent = find(name.substring(0, i = name.lastIndexOf(".")));
+                    node.parent.children.push(node);
+                    node.key = name.substring(i + 1);
+                }
+            }
+            return node;
+        }
+    
+        classes.forEach(function (d) {
+            find(d.name, d);
+        });
+    
+        return d3.hierarchy(map[""]);
+    }
+    
+    // Return a list of imports for the given array of nodes.
+    function packageImports(nodes) {
+        var map = {},
+            imports = [];
+    
+        // Compute a map from name to node.
+        nodes.forEach(function (d) {
+            map[d.data.name] = d;
+        });
+    
+        // For each import, construct a link from the source to target node.
+        nodes.forEach(function (d) {
+            if (d.data.imports) d.data.imports.forEach(function (i) {
+                imports.push(map[d.data.name].path(map[i]));
+            });
+        });
+    
+        return imports;
+    }
+                        </script>

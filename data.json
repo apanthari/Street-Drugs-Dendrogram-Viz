@@ -1,0 +1,38 @@
+[
+    {
+        "name": "substance.other.acetaminophen",
+        "size": 45,
+        "imports": ["substance.sedative.xylazine"]
+    }, 
+
+    {
+        "name": "substance.sedative.xylazine",
+        "size": 10, 
+        "imports": ["substance.opioid.p-fluorofentanyl"]
+
+    }, 
+    {
+        "name": "substance.opioid.p-fluorofentanyl",
+        "size": 10, 
+        "imports": ["substance.opioid.acetylcodeine"]
+
+    }, 
+
+    {
+        "name": "substance.opioid.acetylcodeine",
+        "size": 70,
+        "imports": ["substance.other.acetaminophen"]
+
+    }, 
+
+    {
+        "name": "substance.opioid.fentanyl",
+        "size": 50,
+        "imports": ["substance.other.acetaminophen"]
+
+    }
+
+
+]
+
+

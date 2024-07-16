@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<meta charset='utf-8'>
+
+<html lang="en">
+
+<head>
+<title>Hierarchical Edge Bundling</title>
+</head>
+
+<body>
+
+<h1>Hierarchical Edge Bundling</h1>
+<p>   </p>
+
+</body>
+
+<!-- Load d3.js -->
+<script src="https://d3js.org/d3.v4.js"></script>
+
+<!-- Defining a div (section of HTML doc) where the graph will take place -->
+<!-- what does assinging id element do? -->
+<div id="my_dataviz"></div>
+
+
+<!-- CSS styling for font characteristics-->
+<style> 
+
+</style>
+
+<script> 
+
+// Set up the SVG
+// Set up the SVG
+    var width = 400;
+    var height = 300;
+    var svg = d3.select("body").append("svg")
+        .attr("width", width)
+        .attr("height", height);
+
+    // Define the gradient
+    var gradient = svg.append("defs")
+        .append("linearGradient")
+        .attr("id", "line-gradient")
+        .attr("gradientUnits", "userSpaceOnUse")
+        .attr("x1", "0%")
+        .attr("y1", "0%")
+        .attr("x2", "100%")
+        .attr("y2", "0%");
+
+    gradient.append("stop")
+        .attr("offset", "0%")
+        .attr("stop-color", "purple");
+        
+    gradient.append("stop")
+        .attr("offset", "50.1%")
+        .attr("stop-color", "white");
+
+    gradient.append("stop")
+        .attr("offset", "100%")
+        .attr("stop-color", "grey");
+
+    // Create some sample data
+    var data = [
+        {x: 0, y: 200},
+        {x: 100, y: 100},
+        {x: 200, y: 150},
+        {x: 300, y: 50},
+        {x: 400, y: 200}
+    ];
+
+    // Create a line generator
+    var line = d3.line()
+        .x(function(d) { return d.x; })
+        .y(function(d) { return d.y; })
+        .curve(d3.curveCatmullRom.alpha(0.5)); // This creates a smooth curve
+
+    // Draw the curved line
+    var path = svg.append("path")
+        .datum(data)
+        .attr("d", line)
+        .attr("fill", "none")
+        .attr("stroke", "url(#line-gradient)")
+        .attr("stroke-width", 3);
+
+    // // Update gradient based on path
+    // var pathNode = path.node();
+    // var pathLength = pathNode.getTotalLength();
+    // gradient.attr("x1", pathNode.getPointAtLength(0).x)
+    //         .attr("y1", pathNode.getPointAtLength(0).y)
+    //         .attr("x2", pathNode.getPointAtLength(pathLength).x)
+    //         .attr("y2", pathNode.getPointAtLength(pathLength).y);
+
+</script>

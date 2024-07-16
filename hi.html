@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<html lang="en">
+
+<head>
+<title>Hierarchical Edge Bundling</title>
+</head>
+
+<body>
+
+<h1>Hierarchical Edge Bundling</h1>
+<p>   </p>
+
+</body>
+
+<!-- Load d3.js -->
+<script src="https://d3js.org/d3.v4.js"></script>
+
+<!-- Defining a div (section of HTML doc) where the graph will take place -->
+<!-- what does assinging id element do? -->
+<div id="my_dataviz"></div>
+
+<!-- CSS styling for font characteristics-->
+<style> 
+    .label-text {
+        font-size: 30px; 
+    }
+
+    #my_dataviz svg {  
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+
+<script> 
+const table = [
+    {"name": "Eve",   "parent": ""},
+    {"name": "Cain",  "parent": "Eve"},
+    {"name": "Seth",  "parent": "Eve"},
+    {"name": "Enos",  "parent": "Seth"},
+    {"name": "Noam",  "parent": "Seth"},
+    {"name": "Abel",  "parent": "Eve"},
+    {"name": "Awan",  "parent": "Eve"},
+    {"name": "Enoch", "parent": "Awan"},
+    {"name": "Azura", "parent": "Eve"}
+  ]
+const data = d3.stratify()
+  .id((d) => d.name)
+  .parentId((d) => d.parent)
+(table);
+
+// data now should look somewhat like this: 
+
+// const data = {
+//   name: "Eve",
+//   children: [//
+//     {name: "Cain"},
+//     {name: "Seth", children: [{name: "Enos"}, {name: "Noam"}]},
+//     {name: "Abel"},
+//     {name: "Awan", children: [{name: "Enoch"}]},
+//     {name: "Azura"}
+//   ]
+// };
+
+const root = d3.hierarchy(data);
+
+//now root is in the heirarchical structure 
+
+root.sum((d) => d.value ? 1 : 0);
+
+// Construct the treemap layout.
+const treemap = d3.treemap();
+treemap.size([10, 15]);
+treemap.padding(2);
+
+// Sum and sort the data.
+root.sum((d) => d.value);
+root.sort((a, b) => b.height - a.height || b.value - a.value);
+
+// Compute the treemap layout.
+treemap(root);
+
+// Retrieve all descendant nodes.
+const nodes = root.descendants();
+console.log(nodes); 
+                        </script>
