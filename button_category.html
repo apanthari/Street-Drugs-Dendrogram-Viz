@@ -20,10 +20,12 @@
 
 
 <div id="my_dataviz" style="display: none;"></div>
-
 </body>
 
 <!-- Load d3.js -->
+<script src="https://cdn.rawgit.com/eligrey/canvas-toBlob.js/f1a01896135ab378aa5c0118eadd81da55e698d8/canvas-toBlob.js"></script>
+<script src="https://cdn.rawgit.com/eligrey/FileSaver.js/e9d941381475b5df8b7d7691013401e171014e89/FileSaver.min.js"></script>
+<!-- <script src="https://d3js.org/d3.v3.min.js"></script> -->
 <script src="https://d3js.org/d3.v4.js"></script>
 
 <!-- Defining a div (section of HTML doc) where the graph will take place -->
@@ -77,7 +79,7 @@
 
 
         // Some constants controlling the graph appearance
-        const PADDING_BUBBLE = 30 // distance between line and bubble
+        const PADDING_BUBBLE = 15 // distance between line and bubble
         const PADDING_LABEL = 50 // distance between bubble edge and substance name
         const BUBBLE_SIZE_MIN =  5
         const BUBBLE_SIZE_MAX = 25
@@ -107,7 +109,7 @@
         var svg = d3.select("#my_dataviz").append("svg")
             .attr("viewBox", `0 0 ${diameter * 1.2} ${diameter * 1.2}`)
             .style("max-width", "100%")
-            .style("height", "auto")
+            .style("height", "100%")
             .style("display", "block")
             .style("margin", "auto")
             .append("g")
@@ -315,4 +317,7 @@
 
     });
 
+
+
                         </script>
+
