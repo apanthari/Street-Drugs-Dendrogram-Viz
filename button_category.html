@@ -23,9 +23,6 @@
 </body>
 
 <!-- Load d3.js -->
-<script src="https://cdn.rawgit.com/eligrey/canvas-toBlob.js/f1a01896135ab378aa5c0118eadd81da55e698d8/canvas-toBlob.js"></script>
-<script src="https://cdn.rawgit.com/eligrey/FileSaver.js/e9d941381475b5df8b7d7691013401e171014e89/FileSaver.min.js"></script>
-<!-- <script src="https://d3js.org/d3.v3.min.js"></script> -->
 <script src="https://d3js.org/d3.v4.js"></script>
 
 <!-- Defining a div (section of HTML doc) where the graph will take place -->
@@ -44,25 +41,12 @@
     }
 
     #my_dataviz svg {  
-      width: 100%;
+      width: 100%;   
       height: 100%;
-      max-width: 800px;
-      max-height: 800px
-    }
-/* 
-    #my_dataviz {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 90vh;
-        padding-top: 100px; }
-        /* Adjust this value to move it further down */
-    
-    /* html, body {
-        height: 100%;
-        margin: 0;
-        padding: 0;
-    } */ 
+
+      max-width: 1200px; 
+      max-height: 1200px
+    } 
 
 
   </style>
@@ -79,23 +63,40 @@
 
 
         // Some constants controlling the graph appearance
-        const PADDING_BUBBLE = 15 // distance between line and bubble
-        const PADDING_LABEL = 50 // distance between bubble edge and substance name
+        const PADDING_BUBBLE = 10 // distance between line and bubble
+        const PADDING_LABEL = 35 // distance between bubble edge and substance name
         const BUBBLE_SIZE_MIN =  5
         const BUBBLE_SIZE_MAX = 25
         
         // measurements of the size of the inner viz circle of the entire graph 
         var diameter = Math.min(window.innerWidth, window.innerHeight),
-            radius = diameter / 2,
+            radius = diameter / 2 ,
             innerRadius = radius - 100; // between center and edge end
             //console.log(innerRadius); 
 
+        
+        // // The 'cluster' function takes 1 argument as input. It also has methods (??) like cluster.separation(), cluster.size() and cluster.nodeSize()
+        // var cluster = d3.cluster()
+        //     .size([360, innerRadius]) //sets it to have all the degrees
+        //     .separation(function(a, b) {
+        //         return (a.parent == b.parent ? 1 : 5) / a.depth; //sets ratio for distance between the bubbles
+        //     }); //if a.parent is the same as b.parent then set distance to 1, else set distnace to 2. 
+
+
+            // Add a scale for bubble size
+        var bubbleSizeScale = d3.scaleSqrt()
+            .domain([1, 2500])
+            .range([BUBBLE_SIZE_MIN, BUBBLE_SIZE_MAX]);
         
         // The 'cluster' function takes 1 argument as input. It also has methods (??) like cluster.separation(), cluster.size() and cluster.nodeSize()
         var cluster = d3.cluster()
             .size([360, innerRadius]) //sets it to have all the degrees
             .separation(function(a, b) {
-                return (a.parent == b.parent ? 1 : 5 ) / a.depth; //sets ratio for distance between the bubbles
+                const aSize = bubbleSizeScale(a.value) * 2
+                const bSize = bubbleSizeScale(b.value) * 2
+                const totalSize = aSize + bSize
+                console.log(totalSize)
+                return (a.parent == b.parent ? 4 : totalSize); //sets ratio for distance between the bubbles
             }); //if a.parent is the same as b.parent then set distance to 1, else set distnace to 2. 
 
         
@@ -107,11 +108,11 @@
         
         // sets it to the area was assigned in the html div above 
         var svg = d3.select("#my_dataviz").append("svg")
-            .attr("viewBox", `0 0 ${diameter * 1.2} ${diameter * 1.2}`)
-            .style("max-width", "100%")
-            .style("height", "100%")
-            .style("display", "block")
-            .style("margin", "auto")
+            .attr("viewBox", `0 ${diameter * -0.25} ${diameter} ${diameter * 1.5}`) //play around with these numbers if your SVG is being cut off 
+            .style("max-width", "100%")   // this centered it 
+            // .style("height", "100%")  // this does nothing 
+            // .style("display", "block") // also does nothing
+            // .style("margin", "auto")  // also does nothing
             .append("g")
             .attr("transform", "translate(" + radius + "," + radius + ")");
             
@@ -120,10 +121,6 @@
             label = svg.append("g").selectAll(".label"),
             bubble = svg.append("g").selectAll(".bubble");
         
-        // Add a scale for bubble size
-        var bubbleSizeScale = d3.scaleSqrt()
-            .domain([1, 2500])
-            .range([BUBBLE_SIZE_MIN, BUBBLE_SIZE_MAX]);
         
         // Scale for the bubble size
         d3.json("final_df.json", function (error, hierarchicalData) {
@@ -316,8 +313,6 @@
         show(); 
 
     });
-
-
 
                         </script>
 
