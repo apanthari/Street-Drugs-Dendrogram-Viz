@@ -18,46 +18,37 @@
 <button id="showpsychedelic"> Psychedelic Viz</button>
 <button id="showother"> Other Viz</button>
 
-
-<div id="my_dataviz" style="display: none;"></div>
 </body>
 
 <!-- Load d3.js -->
 <script src="https://d3js.org/d3.v4.js"></script>
 
-<!-- Defining a div (section of HTML doc) where the graph will take place -->
-<!-- what does assinging id element do? -->
+<!-- define svg object -->
 <div id="my_dataviz"></div>
-
 
 <!-- CSS styling for font characteristics-->
 <style> 
-    script {
-        margin: 0
-    }
     .label-text {
         font-size: 12px;
         font-family:Verdana, Geneva, Tahoma, sans-serif;
     }
-
     #my_dataviz svg {  
       width: 100%;   
       height: 100%;
-
       max-width: 1200px; 
       max-height: 1200px
     } 
-
-
-  </style>
+</style>
 
 <script> // this tag marks the start of js code
 
-    //intiate a variable for the selected category
+    //intiate a variable for the selected category (used for buttons)
     selectedCategory = ""; 
 
+    // show function will be called below, after button is clicked
     function show() {
-
+            
+        // removes the my_dataviz element so a new one can be rendered once a different is clicked
         document.getElementById('my_dataviz').style.display = 'block';
         d3.select("#my_dataviz").selectAll("*").remove();
 
@@ -68,34 +59,26 @@
         const BUBBLE_SIZE_MIN =  5
         const BUBBLE_SIZE_MAX = 25
         
-        // measurements of the size of the inner viz circle of the entire graph 
+        // changin diameter will change how close up SVG appears on screen
         var diameter = Math.min(window.innerWidth, window.innerHeight),
             radius = diameter / 2 ,
             innerRadius = radius - 100; // between center and edge end
-            //console.log(innerRadius); 
 
-        
-        // // The 'cluster' function takes 1 argument as input. It also has methods (??) like cluster.separation(), cluster.size() and cluster.nodeSize()
-        // var cluster = d3.cluster()
-        //     .size([360, innerRadius]) //sets it to have all the degrees
-        //     .separation(function(a, b) {
-        //         return (a.parent == b.parent ? 1 : 5) / a.depth; //sets ratio for distance between the bubbles
-        //     }); //if a.parent is the same as b.parent then set distance to 1, else set distnace to 2. 
-
-
-            // Add a scale for bubble size
+        // Add a scale for bubble size
         var bubbleSizeScale = d3.scaleSqrt()
             .domain([1, 2500])
             .range([BUBBLE_SIZE_MIN, BUBBLE_SIZE_MAX]);
         
+        
         // The 'cluster' function takes 1 argument as input. It also has methods (??) like cluster.separation(), cluster.size() and cluster.nodeSize()
+        //What does d3.cluster do?
         var cluster = d3.cluster()
             .size([360, innerRadius]) //sets it to have all the degrees
             .separation(function(a, b) {
                 const aSize = bubbleSizeScale(a.value) * 2
                 const bSize = bubbleSizeScale(b.value) * 2
                 const totalSize = aSize + bSize
-                console.log(totalSize)
+                // console.log(totalSize)
                 return (a.parent == b.parent ? 4 : totalSize); //sets ratio for distance between the bubbles
             }); //if a.parent is the same as b.parent then set distance to 1, else set distnace to 2. 
 
@@ -123,7 +106,7 @@
         
         
         // Scale for the bubble size
-        d3.json("final_df.json", function (error, hierarchicalData) {
+        d3.json("final_df_syn.json", function (error, hierarchicalData) {
         
             // If wanna see your data
             // console.log(hierarchicalData)
@@ -132,7 +115,7 @@
             var root = packageHierarchy(hierarchicalData)
                 //debugger;
                 .sum(function (d) { return d.size; });
-            // console.log(root)
+            console.log(root)
 
 
             // Sort children of each node by size
@@ -147,14 +130,10 @@
             leaves = root.leaves()
             // Leaves is an array of Objects. 1 item = one leaf. Provides x and y for leaf position in the svg. Also gives details about its parent.
             
-            var lineColorScale = d3.scaleOrdinal()
-                .domain(["within", "outside"]) // Specify your line type names here
-                .range(["#D9D9D6", "#000000" ]); // Specify colors for each class
-                    
             // Define a color scale for classes
             var colorScale = d3.scaleOrdinal()
-                .domain(["opioid", "sedative","stimulant", "psychedelic", "cannabinoid", "steroid", "other", "notcat"]) // Specify your class names here
-                .range(["#AB72E4", "#E29EF5", "#EA6C7F", "#E28E18","#6CAB6C", "#ee2824", "#7D7D7D", "#85BBC0" ]); // Specify colors for each class
+                .domain(["opioid", "sedative","stimulant", "psychedelic", "cannabinoid", "steroid", "other"]) // Specify your class names here
+                .range(["#AB72E4", "#E29EF5", "#EA6C7F", "#E28E18","#6CAB6C", "#ee2824", "#7D7D7D" ]); // Specify colors for each class
         
 
             link = link
@@ -164,22 +143,10 @@
                 .attr("class", "link")
                 .attr("d", line)
                 .attr("fill", "none")
-                .attr("stroke", "black")
-                .attr("stroke", function (d) { 
-                    var startingClass = d.source.data.name.split(".")[1];
-                    var endingClass = d.target.data.name.split(".")[1];
-                    if (startingClass == endingClass) {
-                        linecolor = "within";
-                    } else {
-                        linecolor = "outside"; 
-                    }
-                    return lineColorScale(linecolor); 
-                })
-
                 .attr("stroke", function (d) {
                     var startingClass = d.source.data.name.split(".")[1];
                     var endingClass = d.target.data.name.split(".")[1];
-                    
+                    //Change line color based on category of button selected 
                     if (startingClass == selectedCategory || endingClass == selectedCategory) {
                         linecolor = selectedCategory;
                     } else {
@@ -188,7 +155,6 @@
                     return colorScale(linecolor); 
                 })
 
-                // .style('stroke-width', '4px')
                 .style('stroke-width', function(d) {
                         var startingClass = d.source.data.name.split(".")[1];
                         var endingClass = d.target.data.name.split(".")[1];
@@ -196,7 +162,7 @@
                     if (startingClass == selectedCategory || endingClass == selectedCategory) {
                         return '4px';
                     } else {
-                        return '0px'; // This also helps to hide non-opioid lines
+                        return '0px'; // This also helps to hide non-category lines 
                     }
                 })
                 .style('opacity', .1);
