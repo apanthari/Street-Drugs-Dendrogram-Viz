@@ -75,12 +75,12 @@
         var cluster = d3.cluster()
             .size([360, innerRadius]) //sets it to have all the degrees
             .separation(function(a, b) {
-                const aSize = bubbleSizeScale(a.value) * 2
-                const bSize = bubbleSizeScale(b.value) * 2
+                const aSize = bubbleSizeScale(a.value) * 0.5
+                const bSize = bubbleSizeScale(b.value) * 0.5
                 const totalSize = aSize + bSize
                 // console.log(totalSize)
                 return (a.parent == b.parent ? 4 : totalSize); //sets ratio for distance between the bubbles
-            }); //if a.parent is the same as b.parent then set distance to 1, else set distnace to 2. 
+            }); 
 
         
         // related to creating/angling lines that are connecting nodes 
@@ -182,7 +182,8 @@
                 .attr("class", "bubble")
                 .attr("transform", function (d) {
                     var index = d.parent.children.indexOf(d);
-                    var angle = (d.x - 90) + (index - (d.parent.children.length - 1) / 2) * 0.5;
+
+                    var angle = (d.x - 90); //+ (index - (d.parent.children.length - 1) / 2) * 0.5;
                     return "rotate(" + angle + ")translate(" + (d.y + PADDING_BUBBLE) + ",0)";
                 })
                 .attr('r', d => bubbleSizeScale(d.value))
