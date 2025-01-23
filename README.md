@@ -2,15 +2,24 @@
 
 #### This project is part of my 2024 Summer Practicum Project at the UNC Injury & Prevention Center (mentored by Dr. Nab Dasgupta)
 
-### **`About the Data`**
-##### Data is pulled from UNC Street Drug Analysis Lab's drug checking samples and in-house chemical dictionary. 
-##### Chemicals were categorized into 6 mains groups (opioid, sedative, cannabinoid, stimulant, psychdelic, & other).
-##### Data was last updated July 2024. 
+## **`About the Data`**
 
-### **`About the Viz`**
-##### Our goal was to create an eye catching visualization that drew people into the conversation of harm reduction with the drug use space. 
+#### Data is pulled from UNC Street Drug Analysis Lab's drug checking samples and in-house chemical dictionary.
 
-### **`File Breakdown`**
+#### Chemicals were categorized into 6 mains groups:
+##### opioid -- purple 
+##### sedative -- pink
+##### cannabinoid -- green
+##### stimulant -- red
+##### psychdelic -- orange
+##### other -- gray
+
+#### Data was last updated July 2024. 
+
+## **`About the Viz`**
+#### Our goal was to create an eye catching visualization that drew people into the conversation of harm reduction with the drug use space. 
+
+## **`File Breakdown`**
 
 ##### **`csvtojson.ipynb`** pulls performs data wrangling to bring together the chemical dictionary (housed in smartsheet) and the lab samples. This file creates the file_df_syn.json which is then called in our button_category.html file. 
 
