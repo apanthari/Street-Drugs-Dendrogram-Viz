@@ -17,11 +17,6 @@
 - ![#ee2824](https://placehold.co/15x15/ee2824/ee2824.png) `steriods`
 - ![#7D7D7D](https://placehold.co/15x15/7D7D7D/7D7D7D.png) `other`
 
-##### sedatives -- pink
-##### cannabinoids -- green
-##### stimulants -- red
-##### psychdelics -- orange
-##### other -- gray
 
 ##### Each visualization represents substances that were found only with that given category
 ![alt text](https://github.com/apanthari/Street-Drugs-Dendrogram-Viz/blob/main/static_photos/opioids.png)
