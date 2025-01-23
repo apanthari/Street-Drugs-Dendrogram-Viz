@@ -4,7 +4,7 @@
 
 ### **`About the Data`**
 ##### Data is pulled from UNC Street Drug Analysis Lab's drug checking samples and in-house chemical dictionary. 
-##### Chemicals were categorized into 6 mains groups (opioid, sedative, cannabinoid, stimulant, psychdelic, & other), and we acknowledge that generalizations exist.
+##### Chemicals were categorized into 6 mains groups (opioid, sedative, cannabinoid, stimulant, psychdelic, & other).
 ##### Data was last updated July 2024. 
 
 ### **`About the Viz`**
