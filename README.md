@@ -1,6 +1,8 @@
 # **`Hierarchical Edge Bundling Viz Project`**
 
 #### This project is part of my 2024 Summer Practicum Project at the UNC Injury & Prevention Center (mentored by Dr. Nab Dasgupta)
+#### For more detailed informations about the data collection and processing, see our 
+[National Data Consortium DataBytes Webinar from 8/31/2024](https://github.com/apanthari/Street-Drugs-Dendrogram-Viz/blob/main/DataBytesWebinar_viz.pdf) 
 
 ## **`About the Data`**
 
