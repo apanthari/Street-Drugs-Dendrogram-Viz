@@ -29,6 +29,8 @@
         "imports" (contains a list of all the co-occuring substances found with substance from name)
 
 ##### **`button_category.html`** creates the dendrogram using D3.js, HTML and CSS, by pulling data from the fil_df_syn.json. It converts the data into a hierarchical nature, sets the color, and sizing the visualization. 
+##### **`static_photos`** folder contains screenshots of each category of visualization
+##### **`archived_files`** will contain old files that will not display any visualization when run because the json files it calls no longer exist. 
 
 
 
